@@ -1,16 +1,31 @@
 {
   "name": "quanto-boilerplate",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Frontend Template example",
+  "main": "index.tsx",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack --mode=development",
     "build": "webpack --mode=production",
     "dev": "NODE_ENV=development webpack-dev-server --progress"
   },
-  "author": "",
-  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Arthuzuga/frontend-template"
+  },
+  "keywords": [
+    "react",
+    "typescript",
+    "redux",
+    "jest",
+    "enzime",
+    "cypress",
+    "webpack",
+    "styled-components",
+    "atomic-design"
+  ],
+  "author": "Joao Tavares",
+  "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.7.7",
     "@babel/preset-env": "^7.7.7",
