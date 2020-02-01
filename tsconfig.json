@@ -5,6 +5,9 @@
       "target": "es5",
       "module": "commonjs",
       "jsx": "react",
-      "allowJs": true
+      "allowJs": true,
+      "esModuleInterop": true,
+      "strict": true,
+      "importHelpers": true,
     }
   }
