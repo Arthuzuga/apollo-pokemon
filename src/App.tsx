@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useQuery } from '@apollo/react-hooks';
 import styled from '@emotion/styled';
 
 import { Progress } from 'antd';
@@ -23,10 +22,8 @@ import {
   BugButton,
   DarkButton,
   SteelButton,
-  DragonButton,
-  FairyButton
+  DragonButton
 } from './components/atoms/TypesButtons';
-import { GET_POKEMONS } from './apollo/queries/getPokemon';
 
 const Container = styled.div`
   width: 100%;
@@ -99,17 +96,18 @@ const pokemonTypes = (type: any) => {
 };
 
 export const App = () => {
-  const { data, loading, networkStatus } = useQuery(GET_POKEMONS, {
-    notifyOnNetworkStatusChange: true
-  });
+  const [loading, setLoading] = useState(true);
   const [index, setIndex] = useState(0);
   const [progress, setProgress] = useState(0);
   const [pokemonCatched, savePokemons] = useState([]);
 
   useEffect(() => {
-    console.log(networkStatus);
-    setProgress(Math.ceil(100 / networkStatus));
-  }, [networkStatus]);
+    setProgress(50);
+    setTimeout(() => {
+      setProgress(100);
+      setLoading(false);
+    }, 2000);
+  }, [loading]);
 
   if (loading) {
     return (
@@ -122,11 +120,10 @@ export const App = () => {
     );
   }
 
-  const { pokemons } = data;
   return (
     <Container>
       <Pokedex
-        image={pokemons[index].image}
+        image="https://s3-us-west-2.amazonaws.com/s.cdpn.io/200653/psykokwak.gif"
         previousPokemon={() => {
           if (index <= 0) {
             setIndex(0);
@@ -142,13 +139,22 @@ export const App = () => {
           }
         }}
         pokemon={{
-          name: pokemons[index].name,
-          height: pokemons[index].height.minimum,
-          weight: pokemons[index].weight.minimum,
-          classification: pokemons[index].classification
+          name: 'Psyduck',
+          height: "2'072''",
+          weight: '43.2 lbs.',
+          classification: 'Uses mysterious powers to perform various attacks'
         }}
         pokemonCatch={() => {
-          const save = [...pokemonCatched, pokemons[index]];
+          const save = [
+            ...pokemonCatched,
+            {
+              name: 'Psyduck',
+              height: "2'072''",
+              weight: '43.2 lbs.',
+              classification: 'Uses mysterious powers to perform various attacks',
+              types: ['Water']
+            }
+          ];
           savePokemons(save as any);
         }}
       />
