@@ -1,24 +1,12 @@
 import { gql } from 'apollo-boost';
 
-export const GET_POKEMONS = gql`
-  query {
-    pokemons(first: 151) {
+export const GET_POKEMON = gql`
+  query getPokemon($id: String, $name: String) {
+    pokemon(id: $id, name: $name) {
       id
       number
       name
-      image
-      weight {
-        minimum
-        maximum
-      }
-      height {
-        minimum
-        maximum
-      }
-      classification
       types
-      resistant
-      weaknesses
     }
   }
 `;

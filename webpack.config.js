@@ -24,6 +24,11 @@ module.exports = {
         ]
       },
       {
+        test: /\.(js|jsx)$/,
+        exclude: /node_modules/,
+        use: ['babel-loader']
+      },
+      {
         test: /\.css$/,
         loader: combineLoaders([
           {
@@ -37,7 +42,7 @@ module.exports = {
     ]
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.js', '.json']
+    extensions: ['.tsx', '.ts', '.js', '.jsx', '.json']
   },
   output: {
     path: __dirname + '/dist',

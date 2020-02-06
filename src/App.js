@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useQuery } from '@apollo/react-hooks';
-import styled from '@emotion/styled';
+import { useQuery, useLazyQuery } from '@apollo/react-hooks';
+import styled from 'styled-components';
 
 import { Progress } from 'antd';
 import 'antd/dist/antd.css';
@@ -26,7 +26,8 @@ import {
   DragonButton,
   FairyButton
 } from './components/atoms/TypesButtons';
-import { GET_POKEMONS } from './apollo/queries/getPokemon';
+import { GET_POKEMONS } from './apollo/queries/getPokemons';
+import { GET_POKEMON } from './apollo/queries/getPokemon';
 
 const Container = styled.div`
   width: 100%;
@@ -55,7 +56,7 @@ const PokemonRow = styled.div`
   align-items: center;
 `;
 
-const pokemonTypes = (type: any) => {
+const pokemonTypes = type => {
   switch (type) {
     case 'Normal':
       return <NormalButton>{type}</NormalButton>;
@@ -99,17 +100,36 @@ const pokemonTypes = (type: any) => {
 };
 
 export const App = () => {
-  const { data, loading, networkStatus } = useQuery(GET_POKEMONS, {
-    notifyOnNetworkStatusChange: true
-  });
   const [index, setIndex] = useState(0);
   const [progress, setProgress] = useState(0);
   const [pokemonCatched, savePokemons] = useState([]);
 
+  const { data, loading, networkStatus } = useQuery(GET_POKEMONS, {
+    notifyOnNetworkStatusChange: true
+  });
+  const [getPokemonInfo, { data: pokemonData, loading: pokemonLoading }] = useLazyQuery(
+    GET_POKEMON,
+    {
+      notifyOnNetworkStatusChange: true,
+      onCompleted: () => {
+        const { pokemon } = pokemonData;
+        savePokemons([...pokemonCatched, { ...pokemon, listId: (Math.random() * 100).toFixed(0) }]);
+      }
+    }
+  );
+
+  const getPokemonToList = (id, name) => {
+    getPokemonInfo({
+      variables: {
+        id,
+        name
+      }
+    });
+  };
+
   useEffect(() => {
-    console.log(networkStatus);
-    setProgress(Math.ceil(100 / networkStatus));
-  }, [networkStatus]);
+    setProgress(Math.round(100 / networkStatus));
+  }, [networkStatus, pokemonCatched]);
 
   if (loading) {
     return (
@@ -148,32 +168,40 @@ export const App = () => {
           classification: pokemons[index].classification
         }}
         pokemonCatch={() => {
-          const save = [...pokemonCatched, pokemons[index]];
-          savePokemons(save as any);
+          getPokemonToList(pokemons[index].id, pokemons[index].name);
         }}
       />
       <PokemonList>
-        {pokemonCatched.map(({ name, types }: any, index) => (
-          <PokemonRow key={index}>
-            <span>{name}</span>
-            <div>
+        {pokemonLoading ? (
+          <div style={{ padding: '1rem' }}>
+            <span>Carregando...</span>
+          </div>
+        ) : pokemonCatched.length > 0 ? (
+          pokemonCatched.map(({ name, types, listId }, index) => (
+            <PokemonRow key={index}>
+              <span>{name}</span>
               <div>
-                {types.map((type: any) => (
-                  <React.Fragment key={type}>{pokemonTypes(type)}</React.Fragment>
-                ))}
+                <div>
+                  {types.map(type => {
+                    return <React.Fragment key={type}>{pokemonTypes(type)}</React.Fragment>;
+                  })}
+                </div>
+                <div
+                  style={{ cursor: 'pointer' }}
+                  onClick={event => {
+                    savePokemons(pokemonCatched.filter(pokemon => pokemon.listId !== listId));
+                  }}
+                >
+                  deletar
+                </div>
               </div>
-              <div
-                onClick={event => {
-                  event.preventDefault();
-
-                  savePokemons(pokemonCatched.filter((pokemon: any) => pokemon.name !== name));
-                }}
-              >
-                deletar
-              </div>
-            </div>
-          </PokemonRow>
-        ))}
+            </PokemonRow>
+          ))
+        ) : (
+          <div style={{ padding: '1rem' }}>
+            <span>Lista Vazia, Vamos pegar alguns Pokémons!</span>
+          </div>
+        )}
       </PokemonList>
     </Container>
   );
