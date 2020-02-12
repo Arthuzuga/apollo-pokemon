@@ -7,6 +7,7 @@ export const GET_POKEMON = gql`
       number
       name
       types
+      image
     }
   }
 `;
