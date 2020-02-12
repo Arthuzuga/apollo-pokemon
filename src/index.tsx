@@ -1,6 +1,8 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { ApolloProvider } from '@apollo/react-hooks';
+import 'antd/dist/antd.css';
+
 
 import { App } from './App';
 
